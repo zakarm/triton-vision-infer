@@ -37,3 +37,46 @@ Please open an issue or submit a pull request to discuss changes.
 
 ## License
 MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+## Architecture Overview
+
+```
+ ┌───────────────────┐
+ │   Application     │
+ │ (Your AI Service) │
+ └───────▲───────────┘
+         │ Calls Library API
+         │
+ ┌───────┴────────────────────────┐
+ │  Triton Vision Infer Library   │
+ │ ┌────────────────────────────┐ │
+ │ │  Preprocessing Module      │ │
+ │ │  - Image loading           │ │
+ │ │  - Resize & normalize      │ │
+ │ │  - Batch creation          │ │
+ │ └──────────────▲─────────────┘ │
+ │                │               │
+ │ ┌──────────────┴─────────────┐ │
+ │ │  Triton Client Module      │ │
+ │ │  - gRPC/HTTP calls         │ │
+ │ │  - Input/Output handling   │ │
+ │ └──────────────▲─────────────┘ │
+ │                │               │
+ │ ┌──────────────┴─────────────┐ │
+ │ │  Postprocessing Module     │ │
+ │ │  - YOLO NMS parsing        │ │
+ │ │  - Bounding box conversion │ │
+ │ │  - Confidence filtering    │ │
+ │ └────────────────────────────┘ │
+ └────────────────────────────────┘
+         │
+         │ gRPC/HTTP
+         ▼
+ ┌────────────────────────────────┐
+ │ NVIDIA Triton Inference Server │
+ │ - Hosts TensorRT / ONNX models │
+ │ - Runs inference               │
+ └────────────────────────────────┘
+```
